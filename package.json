@@ -1,0 +1,7 @@
+{
+  "name": "wordshelf",
+  "private": true,
+  "type": "module",
+  "description": "Save the words you look up, sorted into books, with one word to use every day. Static site plus two Vercel functions (api/word.js, api/polish.js).",
+  "engines": { "node": ">=18" }
+}

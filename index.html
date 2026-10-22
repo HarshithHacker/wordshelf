@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#13221f">
+<meta name="description" content="Save the words you look up, sorted into books, with one word to use every day.">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wordshelf">
+<title>Wordshelf</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=Instrument+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+<header class="top">
+  <span class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="4" height="16" rx="1"/><rect x="9" y="2" width="4" height="18" rx="1"/><rect x="15.5" y="5" width="4" height="15" rx="1" transform="rotate(-12 17.5 12.5)"/></svg>Wordshelf</span>
+  <span class="count" id="wordCount"></span>
+</header>
+
+<main id="main">
+  <!-- ============ Shelf view ============ -->
+  <section class="view" id="shelfView" aria-label="Shelf">
+    <article class="today" id="today" aria-live="polite">
+      <div class="today-empty" id="todayEmpty">
+        <p class="today-kicker">Your word for today shows up here</p>
+        <h1 class="t-word">Look up a word you came across</h1>
+        <p class="t-mean">Everything you look up is saved. Each morning one of your words sits here for the whole day, so you can use it a few times and make it stick.</p>
+        <div class="tries" id="tries"></div>
+      </div>
+      <div class="today-full" id="todayFull" hidden>
+        <p class="today-kicker"><span id="todayDate"></span><span class="t-book" id="todayBook"></span></p>
+        <h1 class="t-word" id="tWord"></h1>
+        <p class="t-sub"><span id="tPhon"></span><span id="tPos"></span><button class="say" id="tSay" type="button" aria-label="Hear it" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button></p>
+        <p class="t-mean" id="tMean"></p>
+        <blockquote class="t-ex" id="tEx"></blockquote>
+        <p class="t-tip" id="tTip"></p>
+        <div class="tally-row">
+          <div>
+            <p class="tally-label" id="tallyLabel">Use it 3 times today</p>
+            <svg class="tally" id="tally" viewBox="0 0 150 34" aria-hidden="true"></svg>
+          </div>
+          <button class="btn ink" id="usedBtn" type="button">I used it</button>
+        </div>
+        <span class="stamp" id="stamp" hidden>It stuck</span>
+      </div>
+    </article>
+
+    <form class="lookup" id="lookupForm" role="search">
+      <label class="sr" for="q">Look up a word or idiom</label>
+      <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      <input id="q" name="q" placeholder="Look up a word or idiom" autocomplete="off" autocapitalize="off" spellcheck="false" maxlength="60" enterkeyhint="search">
+      <button class="btn gilt" type="submit" id="lookupBtn">Look up</button>
+    </form>
+    <p class="err" id="lookupErr" role="alert" hidden></p>
+
+    <article class="card result" id="result" hidden></article>
+
+    <section class="shelf-wrap" aria-labelledby="shelfH">
+      <div class="shelf-head">
+        <h2 id="shelfH">Your books</h2>
+        <p class="shelf-hint" id="shelfHint">Words that share a theme go in the same book.</p>
+      </div>
+      <div class="shelf" id="shelf"></div>
+      <div class="plank" aria-hidden="true"></div>
+    </section>
+
+    <section class="recent-wrap" id="recentWrap" hidden>
+      <h2>Recently looked up</h2>
+      <ul class="recent" id="recent"></ul>
+    </section>
+  </section>
+
+  <!-- ============ Polish view ============ -->
+  <section class="view" id="polishView" aria-label="Polish a message" hidden>
+    <div class="polish-intro">
+      <h1>Polish a message</h1>
+      <p>Write it here before you send it on WhatsApp or email. Polish suggests where your saved words fit.</p>
+    </div>
+    <form class="polish" id="polishForm">
+      <label class="sr" for="msg">Your message</label>
+      <textarea id="msg" rows="6" maxlength="1500" placeholder="hey, the movie was really good, the ending was very sad though. we should go again sometime"></textarea>
+      <div class="polish-bar">
+        <span class="hint" id="polishCount"></span>
+        <button class="btn gilt" type="submit" id="polishBtn">Polish</button>
+      </div>
+    </form>
+    <p class="err" id="polishErr" role="alert" hidden></p>
+    <div class="polished" id="polished" hidden>
+      <p class="pol-text" id="polText"></p>
+      <ul class="swaps" id="swaps"></ul>
+      <div class="pol-actions">
+        <button class="btn ink" type="button" id="copyBtn">Copy message</button>
+        <button class="btn line" type="button" id="shareBtn" hidden>Share</button>
+        <span class="hint" id="copied" aria-live="polite"></span>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- a book opened from the shelf -->
+<dialog class="book" id="book" aria-labelledby="bookTitle">
+  <div class="book-inner">
+    <header class="book-head">
+      <span class="book-swatch" id="bookSwatch"></span>
+      <div>
+        <h2 id="bookTitle"></h2>
+        <p id="bookMeta"></p>
+      </div>
+      <button class="x" type="button" id="bookClose" aria-label="Close book"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg></button>
+    </header>
+    <ul class="pages" id="pages"></ul>
+    <form class="rename" id="renameForm">
+      <label for="renameIn">Book name</label>
+      <div class="row"><input id="renameIn" maxlength="40"><button class="btn line" type="submit">Rename</button></div>
+    </form>
+  </div>
+</dialog>
+
+<nav class="tabs" aria-label="Sections">
+  <button type="button" data-view="shelf" aria-current="page"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="4" width="4" height="16" rx="1"/><rect x="9" y="2" width="4" height="18" rx="1"/><rect x="15.5" y="5" width="4" height="15" rx="1" transform="rotate(-12 17.5 12.5)"/></svg>Shelf</button>
+  <button type="button" data-view="polish"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l4-1 11-11-3-3L5 16l-1 4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/><path d="M14 7l3 3" stroke="currentColor" stroke-width="1.8"/></svg>Polish</button>
+</nav>
+
+<div class="toast" id="toast" role="status" hidden><span id="toastTxt"></span><button type="button" id="toastBtn" hidden></button></div>
+
+<script src="app.js"></script>
+</body>
+</html>
